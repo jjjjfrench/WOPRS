@@ -1,4 +1,4 @@
-function [f,varid]=define_outfile_SizeDist(probename,num_rejects,timehhmmss,outfile,num_round_bins,num_diam_bins,In_status,num_aspect_ratio_bins)
+function [f,varid]=define_outfile_SizeDist(probename,num_rejects,timehhmmss,outfile,num_round_bins,num_diam_bins,In_status,num_aspect_ratio_bins,IA_threshold)
 
 %% Create outfile and define variables
 f = netcdf.create(outfile, 'clobber');
@@ -9,6 +9,7 @@ dimid3 = netcdf.defDim(f,'roundness_bin_count',num_round_bins);
 dimid4 = netcdf.defDim(f,'aspect_ratio_bin_count',num_aspect_ratio_bins);
 
 netcdf.putAtt(f, netcdf.getConstant('NC_GLOBAL'),'In_status',In_status);
+netcdf.putAtt(f, netcdf.getConstant('NC_GLOBAL'),'inter_arrival_threshold',IA_threshold);
 
 varid.time = netcdf.defVar(f,'time','double',dimid0);
 netcdf.putAtt(f, varid.time,'long_name','Time in format HHMMSS');
