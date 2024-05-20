@@ -1,4 +1,4 @@
-function Generate_SizeDist(PROC_files,outfile,tas,timehhmmss,probename,num_rejects)
+function Generate_SizeDist(PROC_files,outfile,tas,timehhmmss,probename,num_rejects,IA_threshold)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This function is called by run_SizeDist to generate NetCDF files
 % containing size distribution data. 
@@ -15,6 +15,15 @@ function Generate_SizeDist(PROC_files,outfile,tas,timehhmmss,probename,num_rejec
 % diameter size
 % -rejection ratio across all bins for each probe
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+arguments
+    PROC_files struct
+    outfile (1,:) string
+    tas (1,:) double
+    timehhmmss (1,:) double
+    probename (1,:) char
+    num_rejects (1,1) {mustBeNumeric,mustBeReal}
+    IA_threshold (1,1) {mustBeNumeric,mustBeReal}=10; %Default interarrival threshold (clock cycles) used if no changes are made to run_SizeDist and Generate_SizeDist is called w/o arg
+end 
 %% Begin generating the size distribution
 disp(['Generating Size Distribution for the ',probename]);
 
@@ -24,7 +33,7 @@ disp(['Generating Size Distribution for the ',probename]);
 %% Create NaN arrays
 accepted_counts  = zeros(length(timehhmmss),num_diam_bins)*NaN;
 total_accepted_counts = zeros(length(timehhmmss),1)*NaN;
-total_rejected_counts = zeros(length(timehhmmss),num_rejects)*NaN;
+total_rejected_counts = zeros(length(timehhmmss),num_rejects+1)*NaN;
 roundness_counts = zeros(length(timehhmmss),num_round_bins)*NaN;
 aspect_ratio_counts = zeros(length(timehhmmss),num_aspect_ratio_bins)*NaN;
 sample_volume = zeros(length(timehhmmss),num_diam_bins)*NaN;
@@ -57,6 +66,12 @@ for x = 1:length(PROC_files)
     artifacts = netcdf.getVar(infile,netcdf.inqVarID(infile,'artifact_status'));
     roundness = netcdf.getVar(infile,netcdf.inqVarID(infile,'roundness'));
     aspect_ratio = netcdf.getVar(infile,netcdf.inqVarID(infile,'aspect_ratio'));
+    inter_arrival = netcdf.getVar(infile,netcdf.inqVarID(infile,'inter_arrival'));
+    shattered = inter_arrival <= IA_threshold; %logical indices of all shattered particles
+    ind_accepted = (artifacts==1); %logical indices of accepted (1) artifacts flag
+    %for accepted particles, overwrites artifact status to new "shattered"
+    %artifact of max(artifacts)+1, otherwise status remains accepted (1):
+    artifacts(ind_accepted) = (shattered(ind_accepted)*max(artifacts))+1;
     switch probename
         case '2DS'
             channel = netcdf.getVar(infile,netcdf.inqVarID(infile,'channel'));
@@ -68,10 +83,10 @@ for x = 1:length(PROC_files)
     num_diodes = netcdf.getAtt(infile, netcdf.getConstant('NC_GLOBAL'),'Number of diodes');
     armdst = netcdf.getAtt(infile, netcdf.getConstant('NC_GLOBAL'),'Arm distance');
     wavelength = netcdf.getAtt(infile, netcdf.getConstant('NC_GLOBAL'),'Wavelength');
-    num_rejects = netcdf.getAtt(infile, netcdf.inqVarID(infile,'artifact_status'),'Number of artifact statuses');
+    num_rejects = netcdf.getAtt(infile, netcdf.inqVarID(infile,'artifact_status'),'Number of artifact statuses')+1;
     
     %% Create the output file
-    [f,varid]=define_outfile_SizeDist(probename,num_rejects,timehhmmss,outfile,num_round_bins,num_diam_bins,In_status,num_aspect_ratio_bins);
+    [f,varid]=define_outfile_SizeDist(probename,num_rejects,timehhmmss,outfile,num_round_bins,num_diam_bins,In_status,num_aspect_ratio_bins,IA_threshold);
 
     % Fix flight times if they span multiple days
     timehhmmss(find(diff(timehhmmss)<0)+1:end) = timehhmmss(find(diff(timehhmmss)<0)+1:end) + 240000;

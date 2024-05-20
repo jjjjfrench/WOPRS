@@ -49,11 +49,11 @@ switch probe
 %         % be added, without affecting the size distribution code.
          PROC_file = netcdf.open([PROC_directory,files(1).name],'nowrite');
          num_rejects = netcdf.getAtt(PROC_file, netcdf.inqVarID(PROC_file,'artifact_status'),'Number of artifact statuses');
-        
+        IA_threshold = 1e-5;
         inFile = [PROC_directory,files(1).name];
         proc_pos = find(inFile == 'P',1,'last');
         outFile = [inFile(1:proc_pos-1),'SD.',date,'.2DS.cdf']
-        Generate_SizeDist(files,outFile,tas,floor(timehhmmss),'2DS',num_rejects);    
+        Generate_SizeDist(files,outFile,tas,floor(timehhmmss),'2DS',num_rejects,IA_threshold);    
     case {'HVPS','hvps'}
         files = dir([PROC_directory,'PROC.*.HVPS.cdf']);
         filenums = length(files);
@@ -68,7 +68,7 @@ switch probe
         % be added, without affecting the size distribution code.
          PROC_file = netcdf.open([PROC_directory,files(1).name],'nowrite');
          num_rejects = netcdf.getAtt(PROC_file, netcdf.inqVarID(PROC_file,'artifact_status'),'Number of artifact statuses');
-        
+        IA_threshold = 1e-3;
         inFile = [PROC_directory,files(1).name];
         proc_pos = find(inFile == 'P');
         if length(proc_pos) > 1
@@ -77,7 +77,7 @@ switch probe
             proc_pos = proc_pos(end);
         end
         outFile = [inFile(1:proc_pos-1),'SD.',date,'.HVPS.cdf']
-        Generate_SizeDist(files,number_of_reject_types,outFile,tas,floor(timehhmmss),'HVPS',num_rejects);
+        Generate_SizeDist(files,number_of_reject_types,outFile,tas,floor(timehhmmss),'HVPS',num_rejects,IA_threshold);
         
     case {'CIPG','cip','cipg','CIP'}
 
@@ -94,7 +94,7 @@ switch probe
         % be added, without affecting the size distribution code.
          PROC_file = netcdf.open([PROC_directory,files(1).name],'nowrite');
          num_rejects = netcdf.getAtt(PROC_file, netcdf.inqVarID(PROC_file,'artifact_status'),'Number of artifact statuses');
-        
+        IA_threshold = 1e-5;
         inFile = [PROC_directory,files(1).name];
         proc_pos = find(inFile == 'P');
         if length(proc_pos) > 1
@@ -103,7 +103,7 @@ switch probe
             proc_pos = proc_pos(end);
         end
         outFile = [inFile(1:proc_pos-1),'SD.',date,'.CIP.cdf']
-        Generate_SizeDist(files,number_of_reject_types,outFile,tas,floor(timehhmmss),'CIP',num_rejects);
+        Generate_SizeDist(files,number_of_reject_types,outFile,tas,floor(timehhmmss),'CIP',num_rejects,IA_threshold);
 
     case {'2DP','2dp'}
 
@@ -120,7 +120,7 @@ switch probe
         % be added, without affecting the size distribution code.
          PROC_file = netcdf.open([PROC_directory,files(1).name],'nowrite');
          num_rejects = netcdf.getAtt(PROC_file, netcdf.inqVarID(PROC_file,'artifact_status'),'Number of artifact statuses');
-        
+        IA_threshold = 1e-3;
         inFile = [PROC_directory,files(1).name];
         proc_pos = find(inFile == 'P');
         if length(proc_pos) > 1
@@ -129,7 +129,7 @@ switch probe
             proc_pos = proc_pos(end);
         end
         outFile = [inFile(1:proc_pos-1),'SD.',date,'.2DP.cdf']
-        Generate_SizeDist(files,number_of_reject_types,outFile,tas,floor(timehhmmss),'2DP',num_rejects);
+        Generate_SizeDist(files,number_of_reject_types,outFile,tas,floor(timehhmmss),'2DP',num_rejects,IA_threshold);
         
     case {'2DC','2dc'}
         
