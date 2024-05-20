@@ -357,8 +357,8 @@ for i=((n-1)*nEvery+1):min(n*nEvery,handles.img_count)
                 % 3.
 
                 if artifact_status(kk)==1
-                    [diameter(kk),number_of_holes(kk),number_of_pieces(kk),perimeter(kk),area(kk),aspect_ratio(kk),roundness(kk),orientation(kk),circularity(kk),filled_image]=Image_Analysis_Calculate_Parameters_Level_2(c,in_status(kk));
-                    [poisson_corrected(kk),diameter(kk)]=Image_Analysis_Poisson_Correction_Level_3(diameter(kk),aspect_ratio(kk),area_ratio(kk),circularity(kk),roundness(kk),filled_image);
+                    [diameter(kk),number_of_holes(kk),number_of_pieces(kk),perimeter(kk),area(kk),filled_area(kk),aspect_ratio(kk),roundness(kk),orientation(kk),circularity(kk)]=Image_Analysis_Calculate_Parameters_Level_2(c,in_status(kk));
+                    [poisson_corrected(kk),diameter(kk)]=Image_Analysis_Poisson_Correction_Level_3(diameter(kk),area(kk),filled_area(kk),number_of_pieces(kk),number_of_holes(kk),circularity(kk),roundness(kk));
                 end
                 
                 perimeter(kk) = perimeter(kk) * diodesize *1000;

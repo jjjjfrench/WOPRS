@@ -1,4 +1,4 @@
-function [diameter,num_holes,num_pieces,perimeter,area,aspect_ratio,roundness,orientation,circularity,filled_image]=Image_Analysis_Calculate_Parameters_Level_2(image_buffer,in_status)
+function [diameter,num_holes,num_pieces,perimeter,area,filled_area,aspect_ratio,roundness,orientation,circularity,filled_image]=Image_Analysis_Calculate_Parameters_Level_2(image_buffer,in_status)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This is the second level of image analysis. The purpose of this level is
 % to correct images that have been distorted dues to Poisson Spots. We will 
@@ -29,7 +29,7 @@ num_holes=num_pieces - eulernum;
 
 %% Calculate circularity, roundness, area ratio, and aspect ratio for images
 %% that are 'all-in'
-[perimeter,area,filled_image]=calculate_perimeter(image_buffer_reversed);
+[perimeter,area,filled_area,filled_image]=calculate_perimeter(image_buffer_reversed);
 
 
 % Find the major axis length (in other words, the maximum diameter) of the
@@ -49,9 +49,11 @@ if in_status ~= 'A'
     orientation = NaN;
     perimeter = NaN;
     area = NaN;
+    area_ratio = NaN;
 else
     aspect_ratio = max_length / min_length;
     circularity = (4*pi*area) / (perimeter^2);
     roundness = (4*area) / (pi*max_length^2);
     orientation = stats.Orientation;
+    area_ratio = filled_area/(pi*(0.5*diameter)^2);
 end
