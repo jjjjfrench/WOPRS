@@ -52,8 +52,8 @@ if in_status ~= 'A'
     area_ratio = NaN;
 else
     aspect_ratio = max_length / min_length;
-    circularity = (4*pi*area) / (perimeter^2);
-    roundness = (4*area) / (pi*max_length^2);
+    circularity = (4*pi*filled_area) / (perimeter^2);
+    roundness = (4*filled_area) / (pi*max_length^2);
     orientation = stats.Orientation;
     area_ratio = filled_area/(pi*(0.5*diameter)^2);
 end
