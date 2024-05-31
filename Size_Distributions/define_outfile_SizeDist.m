@@ -1,4 +1,4 @@
-function [f,varid]=define_outfile_SizeDist(probename,num_rejects,timehhmmss,outfile,num_round_bins,num_diam_bins,In_status,num_aspect_ratio_bins,IA_threshold)
+function [f,varid]=define_outfile_SizeDist(probename,num_rejects,timehhmmss,outfile,num_round_bins,num_diam_bins,In_status,num_aspect_ratio_bins,num_circ_bins,IA_threshold)
 
 %% Create outfile and define variables
 f = netcdf.create(outfile, 'clobber');
@@ -7,6 +7,7 @@ dimid1 = netcdf.defDim(f,'bin_count',num_diam_bins);
 dimid2 = netcdf.defDim(f,'reject_status',num_rejects);
 dimid3 = netcdf.defDim(f,'roundness_bin_count',num_round_bins);
 dimid4 = netcdf.defDim(f,'aspect_ratio_bin_count',num_aspect_ratio_bins);
+dimid5 = netcdf.defDim(f,'circularity_bin_count',num_circ_bins);
 
 netcdf.putAtt(f, netcdf.getConstant('NC_GLOBAL'),'In_status',In_status);
 netcdf.putAtt(f, netcdf.getConstant('NC_GLOBAL'),'inter_arrival_threshold',IA_threshold);
@@ -29,11 +30,14 @@ netcdf.putAtt(f, varid.bin_max,'units','micrometers');
 varid.bin_mid = netcdf.defVar(f,'bin_mid','double',dimid1);
 netcdf.putAtt(f, varid.bin_mid,'long_name','Midpoint of each bin');
 netcdf.putAtt(f, varid.bin_mid,'units','micrometers');
-varid.roundness_counts = netcdf.defVar(f,'roundness_counts','double',[dimid0 dimid3]);
-netcdf.putAtt(f, varid.roundness_counts,'long_name','Binwise counts of roundness. Only all-in images have roundness values');
+varid.roundness_counts = netcdf.defVar(f,'roundness_counts','double',[dimid1 dimid3 dimid0]);
+netcdf.putAtt(f, varid.roundness_counts,'long_name','Accepted counts of roundness binned by diameter. Only all-in images have roundness values');
 netcdf.putAtt(f, varid.roundness_counts,'units','unitless');
-varid.aspect_ratio_counts = netcdf.defVar(f,'aspect_ratio_counts','double',[dimid0 dimid4]);
-netcdf.putAtt(f, varid.aspect_ratio_counts,'long_name','Binwise counts of aspect ratio. Only all-in images have aspect ratio values');
+varid.circularity_counts = netcdf.defVar(f,'circularity_counts','double',[dimid1 dimid5 dimid0]);
+netcdf.putAtt(f, varid.circularity_counts,'long_name','Accepted counts of circularity binned by diameter. Only all-in images have roundness values');
+netcdf.putAtt(f, varid.circularity_counts,'units','unitless');
+varid.aspect_ratio_counts = netcdf.defVar(f,'aspect_ratio_counts','double',[dimid1 dimid4 dimid0]);
+netcdf.putAtt(f, varid.aspect_ratio_counts,'long_name','Accepted counts of aspect ratio binned by diameter. Only all-in images have aspect ratio values');
 netcdf.putAtt(f, varid.aspect_ratio_counts,'units','unitless');
 varid.total_reject_counts = netcdf.defVar(f,'total_reject_counts','double',[dimid0 dimid2]);
 netcdf.putAtt(f, varid.total_reject_counts,'long_name','Number of rejected images, sorted by artifact status');
@@ -56,6 +60,9 @@ end
 varid.size_dist = netcdf.defVar(f,['size_dist_',probename],'double',[dimid0 dimid1]);
 netcdf.putAtt(f, varid.size_dist,'long_name',['Size distribution calculated using ',In_status,' images']);
 netcdf.putAtt(f, varid.size_dist,'units','# cm-3 um-1');
+varid.sample_volume = netcdf.defVar(f,'sample_volume','double',[dimid0 dimid1]);
+netcdf.putAtt(f, varid.sample_volume,'long_name','Sample volume used for calculating number concentrations');
+netcdf.putAtt(f, varid.sample_volume,'units','cm3');
 netcdf.endDef(f)
 
 end
