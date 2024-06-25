@@ -1,0 +1,5 @@
+# autosave files #
+*.asv
+
+# text output #
+*.txt

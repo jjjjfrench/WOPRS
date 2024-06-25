@@ -1,4 +1,4 @@
-function [poisson_corrected,diameter]=Image_Analysis_Poisson_Correction_Level_3(diameter,aspect_ratio,area_ratio,circularity,roundness,filled_image)
+function [poisson_corrected,diameter]=Image_Analysis_Poisson_Correction_Level_3(diameter,area,filled_area,num_pieces,num_holes,circularity,roundness)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This is the third level of image analysis. The purpose of this level is
 % to calculate any parameters that we are interested in.
@@ -6,7 +6,7 @@ function [poisson_corrected,diameter]=Image_Analysis_Poisson_Correction_Level_3(
 
 % If the image is somewhat circular and has only 1 hole, we correct it. The
 % smaller then image, the less circular the image has to be.
-if area_ratio > 0.9
+if circularity > 0.6 && roundness > 0.7
     if num_holes == 1 && num_pieces == 1
         % Find the area of the hole and then the equivalent diameters of the
         % hole and the filled image

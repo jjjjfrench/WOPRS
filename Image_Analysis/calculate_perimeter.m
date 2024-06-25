@@ -1,4 +1,4 @@
-function [perimeter,area,filled_image]=calculate_perimeter(image_buffer_reversed)
+function [perimeter,area,filled_area,filled_image]=calculate_perimeter(image_buffer_reversed)
 perimeter = 0;
 unshadowed_edges = 0;
 
@@ -21,11 +21,13 @@ end
 
 % Fill all holes in the image before calculating area. Filling the hole
 % here just applies to calculations; it does not change the actual image 
-% when viewed.
+% when viewed. Both areas are preserved
+
+stats=regionprops(image_buffer_reversed,'Area');
+area=stats.Area;
 filled_image = imfill(image_buffer_reversed,8,'holes');
 stats=regionprops(filled_image,'Area');
-area=stats.Area;
-
+filled_area=stats.Area;
 
 for i=1:n_slices
     for j=1:bits
